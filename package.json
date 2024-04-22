@@ -11,7 +11,8 @@
     ".": {
       "import": "./dist/goar-components.es.js", 
       "require": "./dist/goar-components.umd.js" 
-    }
+    }, 
+    "./dist/style.css": "./dist/style.css"
   },
  
   "scripts": {
