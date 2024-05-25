@@ -10,12 +10,12 @@ import GTable from './components/GTable.vue';
 import GSelect from './components/GSelect.vue';
 import GToast from './components/GToast.vue';
 import type { GTableHeader  } from './types/GTableHeader.ts';
-import type { ToastContent  } from './types/GToastTypes.ts'; // rename!!!
-import { ToastSuccess, ToastDanger, ToastInfo, ToastWarning  } from './types/GToastTypes.ts'; // rename!!!
+import type { GToastContent  } from './types/GToastTypes.ts'; // rename!!!
+import { GToastSuccess, GToastDanger, GToastInfo, GToastWarning  } from './types/GToastTypes.ts'; // rename!!!
 
-export { GTable, GSelect, GToast, ToastSuccess, ToastDanger, ToastInfo, ToastWarning };
+export { GTable, GSelect, GToast, GToastSuccess, GToastDanger, GToastInfo, GToastWarning };
 
-export type { GTableHeader, ToastContent }; 
+export type { GTableHeader, GToastContent }; 
 //export default GoarComponents;
 
 

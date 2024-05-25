@@ -1,19 +1,19 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from "vue";
-import type { ToastContent } from "../types/GToastTypes.ts";
+import type { GToastContent } from "../types/GToastTypes.ts";
 
 import { v4 as uuidv4 } from "uuid";
 
 
 export const useToastsStore = defineStore('toasts', () => {
   //const items = ref(<ToastContent>[])
-  const items = ref<ToastContent[]>([]);
+  const items = ref<GToastContent[]>([]);
 
 
   const getToasts = computed(() => items.value)
 
 
-  function add(maxNumber: number, toast: ToastContent) {
+  function add(maxNumber: number, toast: GToastContent) {
     if (toast.id == undefined) {
       toast.id = "gtoast_" + uuidv4();
     }

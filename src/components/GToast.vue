@@ -26,7 +26,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUpdated } from "vue";
-import type { ToastContent } from '../types/GToastTypes.ts'
+import type { GToastContent } from '../types/GToastTypes.ts'
 //import { ToastSuccess } from '@/types/GToastTypes.ts'
 import { useToastsStore } from '../stores/toasts'
 import { Toast } from "bootstrap";
@@ -131,13 +131,13 @@ onUpdated(() => {
  
 });
 
-const add = (toast: ToastContent) => {
+const add = (toast: GToastContent) => {
   store.add(props.maxNumber, toast);
  
 };
 
 defineExpose({
-  addToast(toast: ToastContent) {
+  addToast(toast: GToastContent) {
     add(toast);
   },
 
@@ -153,24 +153,24 @@ const getToastPlacement = computed(() => {
 });
 
 
-function getToastClasses(item: ToastContent) {
+function getToastClasses(item: GToastContent) {
   return "gtoast toast" + ((item.toastClasses !== undefined && item.toastClasses !== "") ? " " + item.toastClasses : "");
 }
 
-function getHeaderClasses(item: ToastContent) {
+function getHeaderClasses(item: GToastContent) {
   return "toast-header" + ((item.headerClasses !== undefined && item.headerClasses !== "") ? " " + item.headerClasses : "");
 }
 
-function getBodyClasses(item: ToastContent) {
+function getBodyClasses(item: GToastContent) {
   return "toast-body" + ((item.bodyClasses !== undefined && item.bodyClasses != "") ? " " + item.bodyClasses : "");
 }
 
-function getSecondaryContentClasses(item: ToastContent) {
+function getSecondaryContentClasses(item: GToastContent) {
   return ((item.secondaryContentClasses !== undefined && item.secondaryContentClasses != "") ? item.secondaryContentClasses : "");
 }
 
 
-function getCloseButtonClasses(item: ToastContent) {
+function getCloseButtonClasses(item: GToastContent) {
   return "btn-close" + ((item.closeButtonClasses !== undefined && item.closeButtonClasses != "") ? " " + item.closeButtonClasses : "");
 }
 

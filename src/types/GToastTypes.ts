@@ -1,5 +1,5 @@
 
-export interface ToastContent {
+export interface GToastContent {
   id?: string;
   title: string;
   content?: string;
@@ -17,7 +17,7 @@ export interface ToastContent {
 }
 
 
-export const ToastSuccess = <ToastContent>{
+export const GToastSuccess = <GToastContent>{
   title: "",
   toastClasses: "bg-success text-bg-success",
   headerClasses: "bg-success text-bg-success",
@@ -26,7 +26,7 @@ export const ToastSuccess = <ToastContent>{
 }
 
 
-export const ToastWarning = <ToastContent>{
+export const GToastWarning = <GToastContent>{
   title: "",
   toastClasses: "bg-warning text-bg-warning",
   headerClasses: "bg-warning text-bg-warning",
@@ -35,7 +35,7 @@ export const ToastWarning = <ToastContent>{
 }
 
 
-export const ToastDanger = <ToastContent>{
+export const GToastDanger = <GToastContent>{
   title: "",
   toastClasses: "bg-danger text-bg-danger",
   headerClasses: "bg-danger text-bg-danger",
@@ -44,7 +44,7 @@ export const ToastDanger = <ToastContent>{
 }
 
 
-export const ToastInfo = <ToastContent>{
+export const GToastInfo = <GToastContent>{
   //title: "",
   toastClasses: "bg-info text-bg-info",
   headerClasses: "bg-info text-bg-info",
