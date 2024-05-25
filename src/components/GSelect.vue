@@ -8,7 +8,8 @@
       <li v-for="(option, index) in options" :key="index"
         class="list-group-item d-flex justify-content-left align-items-center"
         :class="{ 'selected': selectedKey === option.key && isFocused === true }" @click="selectOption(option.key)">
-        <span v-if="selectedKey === option.key" @click.stop="deselect()" class="badge bg-primary"><i class="bi-check-lg"></i></span>
+        <span v-if="selectedKey === option.key" @click.stop="deselect()" class="badge bg-primary"><i
+            class="bi-check-lg"></i></span>
         <span v-else class="badge bg-light"><i class="bi-square"></i></span>
         <span class="px-2">{{ option.value }}</span>
       </li>
@@ -19,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUpdated, useSlots, reactive, ref, nextTick } from 'vue';
+import { onUpdated, ref, nextTick } from 'vue';
 
 interface Props {
   modelValue?: string,
@@ -39,7 +40,7 @@ const props = withDefaults(defineProps<Props>(), {
   name: '',
   height: 200,
   options: () => [],
-  allowDeselect: true, 
+  allowDeselect: true,
 
 })
 
@@ -88,7 +89,7 @@ function onBlur(event) {
 
 
 function onChange() {
-console.log("in onChange");
+  console.log("in onChange");
   emits('change');
 }
 
@@ -136,7 +137,7 @@ async function handleKeyDown(event) {
       //console.log("deselected key", deselectedKey.value);
       selectedKey.value = deselectedKey.value;
     }
-    
+
   }
 }
 
