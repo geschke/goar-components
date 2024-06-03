@@ -2,7 +2,7 @@
 import { App } from 'vue';
 import { createPinia } from 'pinia';
 import GTable from './components/GTable.vue';
-import GSelect from './components/GSelect.vue';
+import GSelect from './components/GSelect/GSelect.vue';
 import GToast from './components/GToast.vue';
 
 const GoarComponents = {

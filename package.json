@@ -14,11 +14,7 @@
       "import": "./dist/goar-components.es.js",
       "require": "./dist/goar-components.cjs.js" 
     },
-    "./plugin": {
-      "import": "./dist/plugin.es.js",
-      "require": "./dist/plugin.cjs.js"
-    },
-    "./dist/style.css": "./dist/style.css"
+  "./dist/style.css": "./dist/style.css"
   },
   "scripts": {
     "dev": "vite",

@@ -7,7 +7,7 @@ export * from './types/GTableHeader';
 */
 //import GoarComponents from './plugin.ts';
 import GTable from './components/GTable.vue';
-import GSelect from './components/GSelect.vue';
+import { GSelect } from './components/GSelect';
 import GToast from './components/GToast.vue';
 import type { GTableHeader  } from './types/GTableHeader.ts';
 import type { GToastContent  } from './types/GToastTypes.ts'; // rename!!!
