@@ -1,12 +1,13 @@
 <template>
   <div _class="row">
-   
+
     <table :class="tableClasses">
       <thead :class="tableHeadClasses">
         <tr>
           <th v-for="header in headers" :key="header.field" scope="col">
             <span :class="checkboxStyle(header)" v-if="header.type && header.type == 'checkbox'">
-              <input class="form-check-input" type="checkbox" value="" :id="tableIdentifier('th')">
+              <input class="form-check-input" type="checkbox" :checked="isAllChecked(header)"
+                @change="handleHeaderCheckEvent($event, header)" :id="tableIdentifier('th')">
 
             </span>
             <span v-else>
@@ -29,14 +30,15 @@
 
               <span v-else-if="header.type && header.type == 'checkbox'" :class="checkboxStyle(header)">
                 <input class="form-check-input" type="checkbox" v-model="checkedItems[item[header.field]]"
-                  @change="handleCheckEvent(header, item, index)" :checked="callChecked(header, item, index)"
-                  role="switch" :id="tableIdentifier('td_' + item[header.field])">
+                  @change="handleCheckEvent(header, item)" :checked="callChecked(header, item, index)" role="switch"
+                  :id="tableIdentifier('td_' + item[header.field])">
+
 
               </span>
               <div v-else-if="header.type == 'expandable'">
-                <button type="button" @click="toggleExpanded(index, header.field)" 
-                  class="btn btn-link btn-no-underline"
-                  aria-expanded="false" aria-controls="getCollapseTargetId(index)"><i :class="['bi bi-caret-right',  expandedItems[index] ? ['icon-expanded'] : ['icon-collapsed']]"></i></button>
+                <button type="button" @click="toggleExpanded(index, header.field)" class="btn btn-link btn-no-underline"
+                  aria-expanded="false" aria-controls="getCollapseTargetId(index)"><i
+                    :class="['bi bi-caret-right', expandedItems[index] ? ['icon-expanded'] : ['icon-collapsed']]"></i></button>
 
               </div>
 
@@ -52,12 +54,12 @@
 
           </tr>
           <Transition name="collapse">
-          <tr v-if="expandedItems[index]" class="collapse-row" :id="getCollapseId(index)">
-            <td :colspan="headers.length">
-              <slot :name="expandedItemFields[index]" :value="index"></slot>
-            </td>
+            <tr v-if="expandedItems[index]" class="collapse-row" :id="getCollapseId(index)">
+              <td :colspan="headers.length">
+                <slot :name="expandedItemFields[index]" :value="index"></slot>
+              </td>
 
-          </tr>
+            </tr>
           </Transition>
         </template>
 
@@ -96,7 +98,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, useSlots, onUpdated, ref } from 'vue';
+import { computed, onMounted, useSlots, onUpdated, ref, reactive } from 'vue';
 import type { GTableHeader } from "../types/GTableHeader.ts";
 
 import { v4 as uuidv4 } from 'uuid';
@@ -115,6 +117,7 @@ interface Props {
   items: Array<Object>,
   keyField?: string,
   checkEvent?: string, // name of event to be triggered when checkbox is clicked (changed)
+
   expandEvent?: string, // name of event to be triggered when expand button is clicked
   pagination?: boolean,
   currentPage?: number, // default 1
@@ -174,7 +177,7 @@ interface AssocArrayString {
 }
 
 
-let checkedItems: AssocArrayBoolean = {};
+const checkedItems = reactive(<AssocArrayBoolean>{});
 const expandedItems = ref(<AssocArrayBoolean>{});
 let expandedItemFields: AssocArrayString = {};
 
@@ -185,9 +188,16 @@ onMounted(() => {
   //uuid.value = uuidv4();
   //console.log(uuid);
   //console.log("Pagination? ", props.pagination);
-  checkedItems = {};
+  //checkedItems = {};
   expandedItems.value = {};
   expandedItemFields = {};
+
+  /*
+  let checkboxId = tableIdentifier('th');
+  console.log(checkboxId);
+  let checkbox = document.getElementById(checkboxId);
+  checkbox.indeterminate = true;
+*/
   /*for (let i = 0; i < props.items.length ; i++) {
     let isChecked = false; // header.checked(props.items[i]);
     checkedItems.value[i] = isChecked;
@@ -232,20 +242,41 @@ const callRender = (header: GTableHeader, item: any) => {
   }
 };
 
+
+const isAllChecked = (header: GTableHeader) => {
+  const items = getItems();
+  let isChecked = true;
+  items.forEach(function (loopitem) {
+    if (checkedItems[loopitem[header.field]] != true) {
+      isChecked = false;
+    }
+  });
+  console.log("in isAllChecked mit result ", isChecked);
+  return isChecked;
+};
+
+
 const callChecked = (header: GTableHeader, item: any, index: number) => {
   let checkedValue = null;
   //console.log("in callChecked mit item id: ");
   //console.log(item[header.field]);
+
+  // does callback function exist? 
+  // when callback function to get "checked" status is available, 
+  // call it to get information about the (initial) checked status of current item
   if (header.isChecked) {
     //console.log("Wert vorhanden?", checkedItems.hasOwnProperty(item[header.field]));
 
     // todo: optimize, return value earlier
     if (checkedItems.hasOwnProperty(item[header.field])) {
+      // if checked status is taken from previous call, then use it!
       checkedValue = checkedItems[item[header.field]];
     } else {
       checkedValue = header.isChecked(item);
+      // take checked status into corresponding checkedItems array
+      checkedItems[item[header.field]] = checkedValue;
     }
-    checkedItems[item[header.field]] = checkedValue;
+
     //console.log(checkedItems);
     return checkedValue; // header.checked(item);
   }
@@ -279,9 +310,9 @@ function getCollapseId(index: number): string {
   return tableIdentifier("tr_collapse") + '_' + index;
 }
 
-function getCollapseTargetId(index: number): string {
+/*function getCollapseTargetId(index: number): string {
   return '#' + tableIdentifier("tr_collapse") + '_' + index;
-}
+}*/
 
 
 function checkboxStyle(header: GTableHeader): string {
@@ -292,17 +323,64 @@ function checkboxStyle(header: GTableHeader): string {
   return classes;
 }
 
-function handleCheckEvent(header: GTableHeader, item: any, index: number) {
-  //console.log("in handleCheckEvent GTable");
-  //console.log(item);
+function handleCheckEvent(header: GTableHeader, item: any) {
+  console.log("in handleCheckEvent GTable");
+  console.log(item);
   //console.log(checkedItems);
   //console.log(props.checkEvent);
+
+/*  const items = getItems();
+  const currentStatus = checkedItems[item[header.field]];
+  let targetStatus = true;
+  console.log("Status after change:", currentStatus);
+  console.log("targetSTatus at start", targetStatus);
+
+  items.forEach(function (loopitem) {
+    console.log(checkedItems[loopitem[header.field]]);
+    if (checkedItems[loopitem[header.field]] != true) {
+      console.log("Set targetstatus at ", loopitem);
+      targetStatus = false;
+    }
+  });
+
+  console.log("targetSTatus is: ", targetStatus);
+*/
+
   if (props.checkEvent) {
     emits(props.checkEvent, {
       item: item,
       status: checkedItems[item[header.field]], //true,
     });
   }
+
+}
+
+function handleHeaderCheckEvent(event: Event, header: GTableHeader) {
+  console.log("in handleHeaderCheckEvent GTable");
+
+  const target = event.target as HTMLInputElement;
+  const isChecked = target.checked;
+  console.log("checkboxes in table must set to:", isChecked);
+  const items = getItems();
+
+  items.forEach(function (item) {
+    console.log(item[header.field]);
+    if (checkedItems.hasOwnProperty(item[header.field])) { // previous value is available
+      if (checkedItems[item[header.field]] != isChecked) {
+        console.log("field ", item[header.field], " set to: ", isChecked);
+        checkedItems[item[header.field]] = isChecked;
+        handleCheckEvent(header, item); // is implicitly called by change event
+      } /*else {
+        console.log("field ", item[header.field], "correct status is already set");
+      }*/
+
+
+    } else {
+      checkedItems[item[header.field]] = isChecked;
+    }
+  });
+
+
 
 }
 
@@ -394,12 +472,14 @@ function paginationRange() {
 </script>
 
 <style scoped>
-.collapse-row-enter-active, .collapse-row-leave-active {
+.collapse-row-enter-active,
+.collapse-row-leave-active {
   transition: height 0.5s ease-in-out;
   overflow: hidden;
 }
 
-.collapse-row-enter, .collapse-row-leave-to {
+.collapse-row-enter,
+.collapse-row-leave-to {
   height: 0;
 }
 
@@ -411,7 +491,7 @@ function paginationRange() {
 }
 
 .btn-no-underline {
-text-decoration: none;
+  text-decoration: none;
 }
 
 .icon-expanded {
