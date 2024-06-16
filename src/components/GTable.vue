@@ -5,7 +5,8 @@
       <thead :class="tableHeadClasses">
         <tr>
           <th v-for="header in headers" :key="header.field" scope="col">
-            <span :class="checkboxStyle(header)" v-if="header.type && header.type == 'checkbox'">
+            <span v-if="header.type && header.type == 'checkbox' && header.checkboxHeader==false">&nbsp;</span>
+            <span v-else-if="header.type && header.type == 'checkbox'" :class="checkboxStyle(header)" >
               <input class="form-check-input" type="checkbox" :checked="isAllChecked(header)"
                 @change="handleHeaderCheckEvent($event, header)" :id="tableIdentifier('th')">
 
@@ -367,13 +368,11 @@ function handleHeaderCheckEvent(event: Event, header: GTableHeader) {
     console.log(item[header.field]);
     if (checkedItems.hasOwnProperty(item[header.field])) { // previous value is available
       if (checkedItems[item[header.field]] != isChecked) {
+        // only set and trigger event if current value differs from target value
         console.log("field ", item[header.field], " set to: ", isChecked);
         checkedItems[item[header.field]] = isChecked;
-        handleCheckEvent(header, item); // is implicitly called by change event
-      } /*else {
-        console.log("field ", item[header.field], "correct status is already set");
-      }*/
-
+        handleCheckEvent(header, item);
+      } 
 
     } else {
       checkedItems[item[header.field]] = isChecked;
