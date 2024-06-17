@@ -1,6 +1,6 @@
 export interface GTableHeader {
   title: string;
-  field?: string;
+  field: string;
   //classes?: string; // currently not used
   type?: string; // optional, could be "checkbox" or "expandable"
   checkboxStyle?: string; // optional, use "switch" for Bootstrap toggle switch style

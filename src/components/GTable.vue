@@ -20,9 +20,9 @@
 
       <tbody :class="tableBodyClasses">
 
-        <template v-for="(item, index ) in getItems()" :key="item[props.keyField]">
+        <template v-for="(item, index) in getItems()" :key="item[props.keyField]">
           <tr>
-            <td v-for="(header, hindex) in headers" :key="header.title">
+            <td v-for="(header) in headers" :key="header.title">
 
 
               <template v-if="slots[header.field] && header.type !== 'expandable'">
@@ -31,7 +31,7 @@
 
               <span v-else-if="header.type && header.type == 'checkbox'" :class="checkboxStyle(header)">
                 <input class="form-check-input" type="checkbox" v-model="checkedItems[item[header.field]]"
-                  @change="handleCheckEvent(header, item)" :checked="callChecked(header, item, index)" role="switch"
+                  @change="handleCheckEvent(header, item)" :checked="callChecked(header, item)" role="switch"
                   :id="tableIdentifier('td_' + item[header.field])">
 
 
@@ -81,7 +81,7 @@
               v-if="showPageIcons" class="bi-chevron-left"></i><span v-else>{{ props.pageStringPrev }}</span></button>
         </li>
 
-        <li v-for="(n, index) in paginationRange()" :class="getPageClasses(n)"><button class="page-link"
+        <li v-for="(n) in paginationRange()" :class="getPageClasses(n)"><button class="page-link"
             @click="gotoPage(n)">{{ n }}</button></li>
         <li class="page-item"><button class="page-link" href="#" @click="gotoPage(getNextPage(currentPage))"><i
               v-if="showPageIcons" class="bi-chevron-right"></i><span v-else>{{ props.pageStringNext }}</span></button>
@@ -101,6 +101,7 @@
 <script setup lang="ts">
 import { computed, onMounted, useSlots, onUpdated, ref, reactive } from 'vue';
 import type { GTableHeader } from "../types/GTableHeader.ts";
+import type { GTableItem } from "../types/GTableItem.ts";
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -109,13 +110,12 @@ const slots = useSlots();
 const emits = defineEmits();
 const uuid = uuidv4();
 
-
 interface Props {
   classes?: string, // CSS table classes
   bodyClasses?: string, // CSS classes of table body (tbody)
   headClasses?: string, // CSS classes of table head (thead)
   headers: Array<GTableHeader>,
-  items: Array<Object>,
+  items: Array<GTableItem>,
   keyField?: string,
   checkEvent?: string, // name of event to be triggered when checkbox is clicked (changed)
 
@@ -257,7 +257,7 @@ const isAllChecked = (header: GTableHeader) => {
 };
 
 
-const callChecked = (header: GTableHeader, item: any, index: number) => {
+const callChecked = (header: GTableHeader, item: any) => {
   let checkedValue = null;
   //console.log("in callChecked mit item id: ");
   //console.log(item[header.field]);
