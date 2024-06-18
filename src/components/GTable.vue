@@ -237,7 +237,7 @@ const isAllChecked = (header: GTableHeader) => {
       isChecked = false;
     }
   });
-  console.log("in isAllChecked mit result ", isChecked);
+  //console.log("in isAllChecked mit result ", isChecked);
   return isChecked;
 };
 

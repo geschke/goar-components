@@ -1,11 +1,17 @@
 # goar-components Documentation
 
-## Overview
-Welcome to goar-components! This Vue.js component library follows the design standards of Bootstrap. It was initially part of a larger project, but was extracted to make it usable in other projects.
+## Introduction to goar-components
 
-The idea for goar-components emerged during a Vue.js project when a table component that adhered to Bootstrap's design standards was needed. Existing components often had unique styles or required significant customization to fit into the project. The goal was to create a library that worked without extensive CSS adjustments or additional styling.
+Welcome to **goar-components**, a Vue.js component library inspired by the design principles of Bootstrap. This library originated from a larger project, where the need for reusable and consistent components across different applications became apparent. Recognizing the potential and versatility of these components, they were extracted from the larger project into a standalone library to be utilized in various projects.
 
-The resulting components rely heavily on Bootstrap's existing design, minimizing custom CSS definitions. This approach ensures that the components can be seamlessly integrated into various projects without altering the overall design.
+The creation of goar-components was driven by the necessity for practical solutions and effective design patterns, rather than an attempt to replace existing libraries. It embodies the design standards and patterns found useful in previous work, making it a reliable choice for enhancing development processes with consistent UI elements.
 
-Though many component libraries are available, goar-components was created to meet specific needs. Expansion is planned in the future as new components are developed or additional functionality is required.
+The idea for goar-components emerged during a Vue.js project when components that adhered closely to Bootstrap's design standards were needed. Existing libraries often had unique styles or required significant customization to fit into the project. The goal was to create a library that worked without extensive CSS adjustments or additional styling. This effort is not intended to discredit other authors and their excellent work, but rather to meet specific needs that were not fully addressed by existing solutions.
 
+Currently, goar-components includes only the functionality that was needed for the original project. However, it may be expanded in the future to include additional features and components as new requirements arise.
+
+This documentation provides detailed information on each component, including usage examples, props, and customization options. The goal is to offer a comprehensive guide that helps seamlessly integrate goar-components into projects, ensuring a smooth and efficient development experience.
+
+Thank you for your interest in goar-components. Let's dive in and explore the possibilities!
+
+## goar-components: GTable Documentation

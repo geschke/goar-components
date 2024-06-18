@@ -10,5 +10,4 @@ export { GTable, GSelect, GToast, GToastSuccess, GToastDanger, GToastInfo, GToas
 export type { GTableHeader, GToastContent }; 
 
 
-
 export { default as GoarComponents } from './plugin';
