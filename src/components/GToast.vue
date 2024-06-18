@@ -85,7 +85,7 @@ onUpdated(() => {
   //console.log(new Date().toISOString(), "in onUpdated hidden toasts? ", hiddenToasts.length);
 
   hiddenToasts.forEach(toastItem => {
-    const id = toastItem.id;
+    const id = toastItem.id as string; // id does exist!
     //console.log(new Date().toISOString(), "1 const id:", id, " toastitem id ", toastItem.id);
     checkLoop++;
    
@@ -99,7 +99,8 @@ onUpdated(() => {
       if (toastItem.showTriggered === false) {
         //console.log(new Date().toISOString(), "4 const id:", id, " toastitem id ", toastItem.id);
         //console.log(new Date().toISOString(), "showTriggered false von", checkLoop, toastItem.id);
-        store.setShowTriggered(toastItem.id)
+        //store.setShowTriggered(toastItem.id)
+        store.setShowTriggered(id)
        
         //console.log(new Date().toISOString(), "5 const id:", id, " toastitem id ", toastItem.id);
         toastElement.addEventListener('hidden.bs.toast', () => {

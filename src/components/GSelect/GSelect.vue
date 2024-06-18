@@ -22,15 +22,21 @@
 <script setup lang="ts">
 import { onUpdated, ref, nextTick } from 'vue';
 
+interface GSelectOption {
+  key: string;
+  value: any;
+}
+
+
 interface Props {
   modelValue?: string,
   name: string,
   height?: number,
-  options: Array<Object>,
+  options: Array<GSelectOption>,
   allowDeselect?: boolean, // currently an idea only, allow or disallow deselection of options, default true
 }
 
-// todo: add design options like focus-ring color, icon for selected and non-selected items,
+// maybe todo: add design options like focus-ring color, icon for selected and non-selected items,
 // background colors and so on
 
 const model = defineModel()
@@ -82,24 +88,24 @@ function emitSelectedKey() {
   onChange();
 }
 
-function onBlur(event) {
+function onBlur(event: FocusEvent) {
   // Weiterleitung des blur-Events, falls nötig
   emits('blur', event);
 }
 
 
 function onChange() {
-  console.log("in onChange");
+  //console.log("in onChange");
   emits('change');
 }
 
 function deselect() {
-  console.log("in deselect");
+  //console.log("in deselect");
   deselectedKey.value = selectedKey.value;
   selectedKey.value = '';
 }
 
-async function handleKeyDown(event) {
+async function handleKeyDown(event: KeyboardEvent) {
   if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
     event.preventDefault();
     // calculate nextIndex 
@@ -141,18 +147,21 @@ async function handleKeyDown(event) {
   }
 }
 
-function scrollToSelectedOption(index) {
-  const container = containerRef.value;
-  const optionElement = container?.querySelectorAll('.list-group-item')[index];
+function scrollToSelectedOption(index: number) {
+  const container = containerRef.value as HTMLElement | null;
+  if (container) {
+    const optionElement = container.querySelectorAll('.list-group-item')[index] as HTMLElement;
 
-  if (optionElement) {
-    // Option, um das Verhalten anzupassen
-    const scrollIntoViewOptions = {
-      behavior: 'smooth', // oder "auto"
-      block: 'nearest', // vermeidet unnötiges Scrollen, wenn das Element bereits sichtbar ist
-      inline: 'start'
-    };
-    optionElement.scrollIntoView(scrollIntoViewOptions);
+
+    if (optionElement) {
+      // Option, um das Verhalten anzupassen
+      const scrollIntoViewOptions: ScrollIntoViewOptions = {
+        behavior: 'smooth', // oder "auto"
+        block: 'nearest', // vermeidet unnötiges Scrollen, wenn das Element bereits sichtbar ist
+        inline: 'start'
+      };
+      optionElement.scrollIntoView(scrollIntoViewOptions);
+    }
   }
 }
 
