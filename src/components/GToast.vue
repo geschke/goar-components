@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUpdated } from "vue";
+import { computed, onUpdated } from "vue";
 import type { GToastContent } from '../types/GToastTypes.ts'
 //import { ToastSuccess } from '@/types/GToastTypes.ts'
 import { useToastsStore } from '../stores/toasts'
@@ -69,11 +69,10 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 
-onMounted(() => {
+/*onMounted(() => {
   console.log("in onMounted");
-
-  
 });
+*/
 
 onUpdated(() => {
   //console.log(new Date().toISOString(), "in onUpdated of GToast ");

@@ -99,7 +99,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, useSlots, onUpdated, ref, reactive } from 'vue';
+import { computed, onMounted, useSlots, ref, reactive } from 'vue';
 import type { GTableHeader } from "../types/GTableHeader.ts";
 import type { GTableItem } from "../types/GTableItem.ts";
 
@@ -184,33 +184,18 @@ let expandedItemFields: AssocArrayString = {};
 
 
 onMounted(() => {
-  console.log("in onMounted of GTable new");
+  //console.log("in onMounted of GTable new");
 
-  //uuid.value = uuidv4();
-  //console.log(uuid);
-  //console.log("Pagination? ", props.pagination);
-  //checkedItems = {};
   expandedItems.value = {};
   expandedItemFields = {};
 
-  /*
-  let checkboxId = tableIdentifier('th');
-  console.log(checkboxId);
-  let checkbox = document.getElementById(checkboxId);
-  checkbox.indeterminate = true;
-*/
-  /*for (let i = 0; i < props.items.length ; i++) {
-    let isChecked = false; // header.checked(props.items[i]);
-    checkedItems.value[i] = isChecked;
-  }
-  console.log("after setting checkedItems");
-  console.log(checkedItems.value);
-*/
+
 });
 
-onUpdated(() => {
+/*onUpdated(() => {
   console.log("in onUpdated of GTable");
 });
+*/
 
 const numberOfItems = computed(() => {
   return props.items.length;
@@ -325,8 +310,8 @@ function checkboxStyle(header: GTableHeader): string {
 }
 
 function handleCheckEvent(header: GTableHeader, item: any) {
-  console.log("in handleCheckEvent GTable");
-  console.log(item);
+  //console.log("in handleCheckEvent GTable");
+  //console.log(item);
   //console.log(checkedItems);
   //console.log(props.checkEvent);
 
@@ -357,19 +342,19 @@ function handleCheckEvent(header: GTableHeader, item: any) {
 }
 
 function handleHeaderCheckEvent(event: Event, header: GTableHeader) {
-  console.log("in handleHeaderCheckEvent GTable");
+  //console.log("in handleHeaderCheckEvent GTable");
 
   const target = event.target as HTMLInputElement;
   const isChecked = target.checked;
-  console.log("checkboxes in table must set to:", isChecked);
+  //console.log("checkboxes in table must set to:", isChecked);
   const items = getItems();
 
   items.forEach(function (item) {
-    console.log(item[header.field]);
+    //console.log(item[header.field]);
     if (checkedItems.hasOwnProperty(item[header.field])) { // previous value is available
       if (checkedItems[item[header.field]] != isChecked) {
         // only set and trigger event if current value differs from target value
-        console.log("field ", item[header.field], " set to: ", isChecked);
+        //console.log("field ", item[header.field], " set to: ", isChecked);
         checkedItems[item[header.field]] = isChecked;
         handleCheckEvent(header, item);
       } 
