@@ -99,7 +99,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, useSlots, ref, reactive } from 'vue';
+import { computed, onMounted, useSlots, ref } from 'vue';
 import type { GTableHeader } from "../types/GTableHeader.ts";
 import type { GTableItem } from "../types/GTableItem.ts";
 
@@ -178,7 +178,7 @@ interface AssocArrayString {
 }
 
 
-const checkedItems = reactive(<AssocArrayBoolean>{});
+const checkedItems = ref(<AssocArrayBoolean>{});
 const expandedItems = ref(<AssocArrayBoolean>{});
 let expandedItemFields: AssocArrayString = {};
 
@@ -186,6 +186,7 @@ let expandedItemFields: AssocArrayString = {};
 onMounted(() => {
   //console.log("in onMounted of GTable new");
 
+  checkedItems.value = {};
   expandedItems.value = {};
   expandedItemFields = {};
 
@@ -233,7 +234,7 @@ const isAllChecked = (header: GTableHeader) => {
   const items = getItems();
   let isChecked = true;
   items.forEach(function (loopitem) {
-    if (checkedItems[loopitem[header.field]] != true) {
+    if (checkedItems.value[loopitem[header.field]] != true) {
       isChecked = false;
     }
   });
@@ -254,13 +255,13 @@ const callChecked = (header: GTableHeader, item: any) => {
     //console.log("Wert vorhanden?", checkedItems.hasOwnProperty(item[header.field]));
 
     // todo: optimize, return value earlier
-    if (checkedItems.hasOwnProperty(item[header.field])) {
+    if (checkedItems.value.hasOwnProperty(item[header.field])) {
       // if checked status is taken from previous call, then use it!
-      checkedValue = checkedItems[item[header.field]];
+      checkedValue = checkedItems.value[item[header.field]];
     } else {
       checkedValue = header.isChecked(item);
       // take checked status into corresponding checkedItems array
-      checkedItems[item[header.field]] = checkedValue;
+      checkedItems.value[item[header.field]] = checkedValue;
     }
 
     //console.log(checkedItems);
@@ -335,7 +336,7 @@ function handleCheckEvent(header: GTableHeader, item: any) {
   if (props.checkEvent) {
     emits(props.checkEvent, {
       item: item,
-      status: checkedItems[item[header.field]], //true,
+      status: checkedItems.value[item[header.field]], //true,
     });
   }
 
@@ -352,15 +353,15 @@ function handleHeaderCheckEvent(event: Event, header: GTableHeader) {
   items.forEach(function (item) {
     //console.log(item[header.field]);
     if (checkedItems.hasOwnProperty(item[header.field])) { // previous value is available
-      if (checkedItems[item[header.field]] != isChecked) {
+      if (checkedItems.value[item[header.field]] != isChecked) {
         // only set and trigger event if current value differs from target value
         //console.log("field ", item[header.field], " set to: ", isChecked);
-        checkedItems[item[header.field]] = isChecked;
+        checkedItems.value[item[header.field]] = isChecked;
         handleCheckEvent(header, item);
       } 
 
     } else {
-      checkedItems[item[header.field]] = isChecked;
+      checkedItems.value[item[header.field]] = isChecked;
     }
   });
 
