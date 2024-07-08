@@ -12,9 +12,9 @@
   "exports": {
     ".": {
       "import": "./dist/goar-components.es.js",
-      "require": "./dist/goar-components.cjs.js" 
+      "require": "./dist/goar-components.cjs.js"
     },
-  "./dist/style.css": "./dist/style.css"
+    "./dist/style.css": "./dist/style.css"
   },
   "scripts": {
     "dev": "vite",
@@ -29,6 +29,7 @@
     "vue": "^3.4.21"
   },
   "devDependencies": {
+    "@types/bootstrap": "^5.2.10",
     "@vitejs/plugin-vue": "^5.0.4",
     "typescript": "^5.2.2",
     "vite": "^5.2.0",

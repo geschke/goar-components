@@ -5,8 +5,8 @@
       <thead :class="tableHeadClasses">
         <tr>
           <th v-for="header in headers" :key="header.field" scope="col">
-            <span v-if="header.type && header.type == 'checkbox' && header.checkboxHeader==false">&nbsp;</span>
-            <span v-else-if="header.type && header.type == 'checkbox'" :class="checkboxStyle(header)" >
+            <span v-if="header.type && header.type == 'checkbox' && header.checkboxHeader == false">&nbsp;</span>
+            <span v-else-if="header.type && header.type == 'checkbox'" :class="checkboxStyle(header)">
               <input class="form-check-input" type="checkbox" :checked="isAllChecked(header)"
                 @change="handleHeaderCheckEvent($event, header)" :id="tableIdentifier('th')">
 
@@ -18,7 +18,29 @@
         </tr>
       </thead>
 
+
       <tbody :class="tableBodyClasses">
+        <tr v-if="showLoading && loading && !items.length">
+          <td :colspan="headers.length">
+            <slot name="tmplLoading">
+              <div class="col text-center">
+                <div class="spinner-border" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            </slot>
+          </td>
+        </tr>
+
+        <tr v-if="!loading && !items.length">
+          <td :colspan="headers.length">
+            <slot name="tmplEmpty">
+              <div class="col text-center">
+                <i class="bi bi-inbox"></i> No Available Data
+              </div>
+            </slot>
+          </td>
+        </tr>
 
         <template v-for="(item, index) in getItems()" :key="item[props.keyField]">
           <tr>
@@ -82,7 +104,8 @@
         </li>
 
         <li v-for="(n) in paginationRange()" :class="getPageClasses(n)"><button class="page-link"
-            @click="gotoPage(n)">{{ n }}</button></li>
+            @click="gotoPage(n)">{{ n
+            }}</button></li>
         <li class="page-item"><button class="page-link" href="#" @click="gotoPage(getNextPage(currentPage))"><i
               v-if="showPageIcons" class="bi-chevron-right"></i><span v-else>{{ props.pageStringNext }}</span></button>
         </li>
@@ -120,6 +143,8 @@ interface Props {
   checkEvent?: string, // name of event to be triggered when checkbox is clicked (changed)
 
   expandEvent?: string, // name of event to be triggered when expand button is clicked
+  showLoading?: boolean, // default false, show loading status according to "loading" prop
+  loading?: boolean, // default false; if true and the items array is empty, a loading animation will be shown
   pagination?: boolean,
   currentPage?: number, // default 1
   itemsPerPage?: number, // default 10
@@ -144,6 +169,8 @@ const props = withDefaults(defineProps<Props>(), {
   keyField: '',
   checkEvent: '',
   expandEvent: '',
+  showLoading: false,
+  loading: false,
   pagination: true,
   currentPage: 1,
   itemsPerPage: 10,
@@ -315,22 +342,22 @@ function handleCheckEvent(header: GTableHeader, item: any) {
   //console.log(checkedItems);
   //console.log(props.checkEvent);
 
-/*  const items = getItems();
-  const currentStatus = checkedItems[item[header.field]];
-  let targetStatus = true;
-  console.log("Status after change:", currentStatus);
-  console.log("targetSTatus at start", targetStatus);
-
-  items.forEach(function (loopitem) {
-    console.log(checkedItems[loopitem[header.field]]);
-    if (checkedItems[loopitem[header.field]] != true) {
-      console.log("Set targetstatus at ", loopitem);
-      targetStatus = false;
-    }
-  });
-
-  console.log("targetSTatus is: ", targetStatus);
-*/
+  /*  const items = getItems();
+    const currentStatus = checkedItems[item[header.field]];
+    let targetStatus = true;
+    console.log("Status after change:", currentStatus);
+    console.log("targetSTatus at start", targetStatus);
+  
+    items.forEach(function (loopitem) {
+      console.log(checkedItems[loopitem[header.field]]);
+      if (checkedItems[loopitem[header.field]] != true) {
+        console.log("Set targetstatus at ", loopitem);
+        targetStatus = false;
+      }
+    });
+  
+    console.log("targetSTatus is: ", targetStatus);
+  */
 
   if (props.checkEvent) {
     emits(props.checkEvent, {
@@ -357,7 +384,7 @@ function handleHeaderCheckEvent(event: Event, header: GTableHeader) {
         //console.log("field ", item[header.field], " set to: ", isChecked);
         checkedItems[item[header.field]] = isChecked;
         handleCheckEvent(header, item);
-      } 
+      }
 
     } else {
       checkedItems[item[header.field]] = isChecked;
