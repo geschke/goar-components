@@ -1,5 +1,5 @@
 <template>
-  <div _class="row">
+  <div>
 
     <table :class="tableClasses">
       <thead :class="tableHeadClasses">
@@ -7,7 +7,9 @@
           <th v-for="header in headers" :key="header.field" scope="col">
             <span v-if="header.type && header.type == 'checkbox' && header.checkboxHeader == false">&nbsp;</span>
             <span v-else-if="header.type && header.type == 'checkbox'" :class="checkboxStyle(header)">
-              <input class="form-check-input" type="checkbox" :checked="isAllChecked(header)"
+              <input class="form-check-input" type="checkbox" 
+              v-bind:disabled="isEmptyDisabled"
+              :checked="isAllChecked(header)"
                 @change="handleHeaderCheckEvent($event, header)" :id="tableIdentifier('th')">
 
             </span>
@@ -32,7 +34,7 @@
           </td>
         </tr>
 
-        <tr v-if="!loading && !items.length">
+        <tr v-if="showEmpty && !loading && !items.length">
           <td :colspan="headers.length">
             <slot name="tmplEmpty">
               <div class="col text-center">
@@ -145,6 +147,7 @@ interface Props {
   expandEvent?: string, // name of event to be triggered when expand button is clicked
   showLoading?: boolean, // default false, show loading status according to "loading" prop
   loading?: boolean, // default false; if true and the items array is empty, a loading animation will be shown
+  showEmpty?: boolean, // default true; show message if items array is empty
   pagination?: boolean,
   currentPage?: number, // default 1
   itemsPerPage?: number, // default 10
@@ -169,6 +172,7 @@ const props = withDefaults(defineProps<Props>(), {
   keyField: '',
   checkEvent: '',
   expandEvent: '',
+  showEmpty: true,
   showLoading: false,
   loading: false,
   pagination: true,
@@ -258,6 +262,9 @@ const callRender = (header: GTableHeader, item: any) => {
 
 const isAllChecked = (header: GTableHeader) => {
   const items = getItems();
+  if (items.length == 0) {
+    return false;
+  }
   let isChecked = true;
   items.forEach(function (loopitem) {
     if (checkedItems[loopitem[header.field]] != true) {
@@ -268,6 +275,13 @@ const isAllChecked = (header: GTableHeader) => {
   return isChecked;
 };
 
+const isEmptyDisabled = computed(() => {
+  const items = getItems();
+  if (items.length == 0) {
+    return true;
+  }
+  return false;
+});
 
 const callChecked = (header: GTableHeader, item: any) => {
   let checkedValue = null;
