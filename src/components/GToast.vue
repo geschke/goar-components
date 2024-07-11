@@ -1,6 +1,7 @@
 <template>
   <div>
      
+
     <div :class="getToastPlacement">
       <div v-for="toast in getToasts" :id="toast.id" :key="toast.id" :class="getToastClasses(toast)" role="alert"
         aria-live="assertive" aria-atomic="true"
@@ -27,14 +28,15 @@
 <script setup lang="ts">
 import { computed, onUpdated } from "vue";
 import type { GToastContent } from '../types/GToastTypes.ts'
-//import { ToastSuccess } from '@/types/GToastTypes.ts'
-import { useToastsStore } from '../stores/toasts'
-import { Toast } from "bootstrap";
 
+import { useToastsStore } from '../stores/toasts'
+
+import { Toast } from 'bootstrap';
 
 const store = useToastsStore();
 
 let checkLoop = 1; // todo: remove this
+
 
 
 // use maximum number, delete toast from array when increasing
@@ -68,9 +70,10 @@ const props = withDefaults(defineProps<Props>(), {
 
 });
 
+/*
+onMounted(() => {
+  console.log("in onMounted of GToast component");
 
-/*onMounted(() => {
-  console.log("in onMounted");
 });
 */
 
@@ -102,36 +105,29 @@ onUpdated(() => {
         store.setShowTriggered(id)
        
         //console.log(new Date().toISOString(), "5 const id:", id, " toastitem id ", toastItem.id);
-        toastElement.addEventListener('hidden.bs.toast', () => {
+        
+          toastElement.addEventListener('hidden.bs.toast', () => {
           //console.log(new Date().toISOString(), "hidden event fired! von ", checkLoop, toastElement.id, id);
 
           store.remove(id);
         
 
         });
-        /*
-        toastElement.addEventListener('hide.bs.toast', () => {
-          console.log(new Date().toISOString(), "hide event fired! von ", checkLoop, toastElement.id, id);
-          
-
-        });
-      
-        toastElement.addEventListener('shown.bs.toast', () => {
-          console.log(new Date().toISOString(), "shown event fired! von ", checkLoop, toastElement.id, id);
-          
-
-        });
-*/
+       
         let toastBS = new Toast(toastElement);
         toastBS.show();
 
       }
     }
+
+
   });
  
+
 });
 
 const add = (toast: GToastContent) => {
+  //console.log("in add mit ", toast);
   store.add(props.maxNumber, toast);
  
 };

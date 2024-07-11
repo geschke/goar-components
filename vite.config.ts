@@ -34,7 +34,7 @@ export default defineConfig({
       fileName: (format) => `goar-components.${format}.js`,
     },
     rollupOptions: {
-      external: ['vue','pinia'], // Externes Modul
+      external: ['vue','pinia','bootstrap'], // Externes Modul
       output: {
         globals: {
           vue: 'Vue', // Globale Variable für Vue
