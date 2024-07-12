@@ -4,6 +4,25 @@
     :style="{ maxHeight: height + 'px' }" @focusin="isFocused = true" @focusout="isFocused = false" @blur="onBlur"
     @keydown="handleKeyDown" tabindex="0">
 
+      <div v-if="showLoading && loading">
+            <slot name="tmplLoading">
+              <div class="col text-center">
+                <div class="spinner-border" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            </slot>
+        </div>
+
+        <div v-if="showEmpty && !loading && !options.length">
+            <slot name="tmplEmpty">
+              <div class="col text-center">
+                <i class="bi bi-inbox"></i> No Available Data
+              </div>
+            </slot>
+          
+        </div>
+
     <ul class="list-group list-group-flush">
       <li v-for="(option, index) in options" :key="index"
         class="list-group-item d-flex justify-content-left align-items-center"
@@ -34,6 +53,10 @@ interface Props {
   height?: number,
   options: Array<GSelectOption>,
   allowDeselect?: boolean, // currently an idea only, allow or disallow deselection of options, default true
+  showLoading?: boolean, // default false, show loading status according to "loading" prop
+  loading?: boolean, // default false; if true, a loading animation will be shown
+  showEmpty?: boolean, // default true; show message if items array is empty
+
 }
 
 // maybe todo: add design options like focus-ring color, icon for selected and non-selected items,
@@ -47,6 +70,11 @@ const props = withDefaults(defineProps<Props>(), {
   height: 200,
   options: () => [],
   allowDeselect: true,
+  showLoading: false,
+  loading: false,
+  showEmpty: true, 
+
+
 
 })
 
