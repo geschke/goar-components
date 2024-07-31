@@ -1,0 +1,15 @@
+examples/
+node_modules/
+.vscode/
+dist/
+*.log
+*.tsbuildinfo
+coverage/
+public/
+tests/
+.DS_Store
+.env
+.vitepress/
+vite.config.ts
+*.config.js
+README.md
