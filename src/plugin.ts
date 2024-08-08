@@ -5,7 +5,7 @@ import GTable from './components/GTable.vue';
 import GSelect from './components/GSelect/GSelect.vue';
 import GToast from './components/GToast.vue';
 
-const GoarComponents = {
+/*const GoarComponents = {
   install(app: App) {
 
 
@@ -18,10 +18,35 @@ const GoarComponents = {
       app.use(pinia);
     }
 
-    app.component('GTable', GTable);
+    
+    //app.component('GTable', GTable);
     app.component('GSelect', GSelect);
     app.component('GToast', GToast);
   }
 };
 
 export default GoarComponents;
+*/
+
+
+export default {
+  install(app: App) {
+
+
+    let pinia: Pinia;
+
+    if (app.config.globalProperties.$pinia) {
+      pinia = app.config.globalProperties.$pinia;
+    } else {
+      pinia = createPinia();
+      app.use(pinia);
+    }
+
+    
+    app.component('GTable', GTable);
+    app.component('GSelect', GSelect);
+    app.component('GToast', GToast);
+  }
+};
+
+//export default GoarComponents;
