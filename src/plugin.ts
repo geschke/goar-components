@@ -6,10 +6,8 @@ import GSelect from './components/GSelect/GSelect.vue';
 import GToast from './components/GToast.vue';
 
 
-
 export default {
   install(app: App) {
-
 
     let pinia: Pinia;
 
