@@ -1,8 +1,14 @@
 {
   "name": "goar-components",
+  "author": "Ralf Geschke <ralf@kuerbis.org>",
+  "license": "MIT",
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/geschke/goar-components.git"
+  },
   "peerDependencies": {
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.3"
@@ -11,12 +17,10 @@
     "vue": "^3.4.31",
     "pinia": "^2.1.7",
     "uuidv4": "^6.2.13"
-
   },
   "devDependencies": {
     "@types/node": "^22.1.0",
     "@types/bootstrap": "^5.2.10",
-
     "@vitejs/plugin-vue": "^5.0.5",
     "typescript": "^5.2.2",
     "vite": "^5.3.4",
@@ -36,7 +40,7 @@
   },
   "types": "./dist/types/index.d.ts",
   "scripts": {
-    "dev": "vite --host 192.168.10.101",
+    "dev": "vite",
     "build": "vite build && vue-tsc --emitDeclarationOnly && mv dist/src dist/types",
     "preserve": "vite build",
     "serve": "vite preview --port 5050",
