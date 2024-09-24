@@ -1,17 +1,29 @@
 {
   "name": "goar-components",
   "author": "Ralf Geschke <ralf@kuerbis.org>",
+  "description": "A Vue.js component library that offers the enhanced UI elements tables, select boxes, and toasts, fully integrated with Bootstrap",
   "license": "MIT",
-  "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/geschke/goar-components.git"
   },
+  "keywords": [
+    "Vue",
+    "Vue.js",
+    "components",
+    "library",
+    "datatable",
+    "toasts",
+    "select",
+    "bootstrap",
+    "front-end"
+  ],
   "peerDependencies": {
     "@popperjs/core": "^2.11.8",
-    "bootstrap": "^5.3.3"
+    "bootstrap": "^5.3.3",
+    "bootstrap-icons": "^1.11.3"
   },
   "dependencies": {
     "vue": "^3.4.31",
