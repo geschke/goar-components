@@ -318,6 +318,7 @@ function toggleExpanded(index: number, field: string) {
     emits(props.expandEvent, { // send row index and expanded status
       index: index,
       expanded: expandedItems.value[index],
+      item: props.items[index]
     });
   }
 
