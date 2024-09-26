@@ -7,10 +7,9 @@
           <th v-for="header in headers" :key="header.field" scope="col">
             <span v-if="header.type && header.type == 'checkbox' && header.checkboxHeader == false">&nbsp;</span>
             <span v-else-if="header.type && header.type == 'checkbox'" :class="checkboxStyle(header)">
-              <input class="form-check-input" type="checkbox" 
-              v-bind:disabled="isEmptyDisabled"
-              :checked="isAllChecked(header)"
-                @change="handleHeaderCheckEvent($event, header)" :id="tableIdentifier('th')">
+              <input class="form-check-input" type="checkbox" v-bind:disabled="isEmptyDisabled"
+                :checked="isAllChecked(header)" @change="handleHeaderCheckEvent($event, header)"
+                :id="tableIdentifier('th')">
 
             </span>
             <span v-else>
@@ -61,9 +60,9 @@
 
               </span>
               <div v-else-if="header.type == 'expandable'">
-                <button type="button" @click="toggleExpanded(index, header.field)" class="btn btn-link btn-no-underline"
+                <button type="button" @click="toggleExpanded(getItemsIndex(index), header.field)" class="btn btn-link btn-no-underline"
                   aria-expanded="false" aria-controls="getCollapseTargetId(index)"><i
-                    :class="['bi bi-caret-right', expandedItems[index] ? ['icon-expanded'] : ['icon-collapsed']]"></i></button>
+                    :class="['bi bi-caret-right', expandedItems[getItemsIndex(index)] ? ['icon-expanded'] : ['icon-collapsed']]"></i></button>
 
               </div>
 
@@ -79,9 +78,9 @@
 
           </tr>
           <Transition name="collapse">
-            <tr v-if="expandedItems[index]" class="collapse-row" :id="getCollapseId(index)">
+            <tr v-if="expandedItems[getItemsIndex(index)]" class="collapse-row" :id="getCollapseId(getItemsIndex(index))">
               <td :colspan="headers.length">
-                <slot :name="expandedItemFields[index]" :value="index"></slot>
+                <slot :name="expandedItemFields[getItemsIndex(index)]" :index="getItemsIndex(index)" :item="items[getItemsIndex(index)]"></slot>
               </td>
 
             </tr>
@@ -113,7 +112,7 @@
         </li>
         <li v-if="props.showPageFirstLast" class="page-item"><button class="page-link" href="#"
             @click="gotoPage(numberOfPages)"><i v-if="showPageIcons" class="bi-chevron-double-right"></i><span v-else>{{
-      props.pageStringLast }}</span></button></li>
+              props.pageStringLast }}</span></button></li>
 
 
       </ul>
@@ -129,6 +128,7 @@ import type { GTableHeader } from "../types/GTableHeader.ts";
 import type { GTableItem } from "../types/GTableItem.ts";
 
 import { v4 as uuidv4 } from 'uuid';
+import { start } from 'repl';
 
 
 const slots = useSlots();
@@ -197,7 +197,7 @@ const props = withDefaults(defineProps<Props>(), {
 const itemsPerPage = ref(props.itemsPerPage);
 const maxPageLinks = ref(props.maxPageLinks);
 const currentPage = ref(props.currentPage);
-
+const offsetIndex = ref(0);
 
 
 interface AssocArrayBoolean {
@@ -215,12 +215,8 @@ let expandedItemFields: AssocArrayString = {};
 
 
 onMounted(() => {
-  //console.log("in onMounted of GTable new");
-
   expandedItems.value = {};
   expandedItemFields = {};
-
-
 });
 
 /*onUpdated(() => {
@@ -452,10 +448,15 @@ function getNextPage(current: number) {
 function getItems() {
   if (props.pagination) {
     let startRange = (currentPage.value - 1) * itemsPerPage.value;
+    offsetIndex.value = startRange; // yeah, ugly side effect... 
 
     return props.items.slice(startRange, startRange + itemsPerPage.value);
   }
   return props.items;
+}
+
+function getItemsIndex(slicedIndex: number) {
+  return offsetIndex.value + slicedIndex;
 }
 
 function paginationRange() {
