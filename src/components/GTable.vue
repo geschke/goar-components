@@ -60,8 +60,9 @@
 
               </span>
               <div v-else-if="header.type == 'expandable'">
-                <button type="button" @click="toggleExpanded(getItemsIndex(index), header.field)" class="btn btn-link btn-no-underline"
-                  aria-expanded="false" aria-controls="getCollapseTargetId(index)"><i
+                <button type="button" @click="toggleExpanded(getItemsIndex(index), header.field)"
+                  class="btn btn-link btn-no-underline" aria-expanded="false"
+                  aria-controls="getCollapseTargetId(index)"><i
                     :class="['bi bi-caret-right', expandedItems[getItemsIndex(index)] ? ['icon-expanded'] : ['icon-collapsed']]"></i></button>
 
               </div>
@@ -78,9 +79,11 @@
 
           </tr>
           <Transition name="collapse">
-            <tr v-if="expandedItems[getItemsIndex(index)]" class="collapse-row" :id="getCollapseId(getItemsIndex(index))">
+            <tr v-if="expandedItems[getItemsIndex(index)]" class="collapse-row"
+              :id="getCollapseId(getItemsIndex(index))">
               <td :colspan="headers.length">
-                <slot :name="expandedItemFields[getItemsIndex(index)]" :index="getItemsIndex(index)" :item="items[getItemsIndex(index)]"></slot>
+                <slot :name="expandedItemFields[getItemsIndex(index)]" :index="getItemsIndex(index)"
+                  :item="items[getItemsIndex(index)]"></slot>
               </td>
 
             </tr>
@@ -214,6 +217,17 @@ const expandedItems = ref(<AssocArrayBoolean>{});
 let expandedItemFields: AssocArrayString = {};
 
 
+
+defineExpose({
+  collapseAll() {
+    collapseAll();
+  },
+  expandAll() {
+    expandAll();
+  }
+
+});
+
 onMounted(() => {
   expandedItems.value = {};
   expandedItemFields = {};
@@ -332,6 +346,74 @@ function tableIdentifier(prefix: string): string {
 
 function getCollapseId(index: number): string {
   return tableIdentifier("tr_collapse") + '_' + index;
+}
+
+function collapseAll() {
+  //console.log("in GTable collapseAll");
+  //console.log(expandedItems.value);
+  //console.log(expandedItemFields);
+  Object.keys(expandedItems.value).forEach((key) => {
+    const value = expandedItems.value[Number(key)];
+
+    //console.log(`Key: ${key}, Value: ${value}`);
+    if (value == true) {
+      expandedItems.value[Number(key)] = false;
+    }
+
+  });
+}
+
+function expandAll() {
+  //console.log("in GTable expandAll");
+  //console.log(expandedItems.value);
+  //console.log(expandedItemFields);
+
+  const items = getItems();
+
+  // find first (!) field of type "expandable"
+  // Currently only one field of type "expandable" is supported.
+  let expandableHeader = null;
+  for (const header of props.headers) {
+    if (header.type === 'expandable') {
+      expandableHeader = header;
+      break;
+    }
+  }
+  //console.log("found expandable header", expandableHeader);
+  if (expandableHeader !== null) {
+
+    for (const [index, item] of items.entries()) {
+      const key = item[props.keyField];
+      //console.log("aktueller index", index);
+      //console.log("get items index of index:", getItemsIndex(index));
+      const itemsIndex = getItemsIndex(index);
+      //console.log("keyField aus Props:", key);
+
+      //console.log("column content", item);
+
+      // taken from toggleExpand, but without toggling
+      let expanded = false;
+      expandedItemFields[index] = expandableHeader.field;
+      if (expandedItems.value.hasOwnProperty(itemsIndex)) {
+        expanded = expandedItems.value[itemsIndex];
+      } // else expanded is false from preset
+      // todo optimize here, expand only if currently isn't expanded
+       
+      expandedItems.value[itemsIndex] = true;
+      //console.log("expanded is? ", expanded, expandedItems.value[index]);
+      if (props.expandEvent) { // emit event if prop is defined
+        //console.log("emit expandEvent mit index ", index);
+        emits(props.expandEvent, { // send row index and expanded status
+          index: itemsIndex,
+          expanded: expandedItems.value[itemsIndex],
+          item: props.items[itemsIndex]
+        });
+      }
+    }
+
+  }
+
+
 }
 
 /*function getCollapseTargetId(index: number): string {
