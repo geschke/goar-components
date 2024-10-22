@@ -3,7 +3,7 @@
   "author": "Ralf Geschke <ralf@kuerbis.org>",
   "description": "A Vue.js component library that offers the enhanced UI elements tables, select boxes, and toasts, fully integrated with Bootstrap",
   "license": "MIT",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "type": "module",
   "repository": {
     "type": "git",

@@ -8,10 +8,18 @@
             <span v-if="header.type && header.type == 'checkbox' && header.checkboxHeader == false">&nbsp;</span>
             <span v-else-if="header.type && header.type == 'checkbox'" :class="checkboxStyle(header)">
               <input class="form-check-input" type="checkbox" v-bind:disabled="isEmptyDisabled"
-                :checked="isAllChecked(header)" @change="handleHeaderCheckEvent($event, header)"
+                :checked="isCheckedAll(header)" @change="handleHeaderCheckEvent($event, header)"
                 :id="tableIdentifier('th')">
 
             </span>
+            <span
+              v-else-if="header.expandableAll && header.expandableAll == true && header.type && header.type == 'expandable'">
+              <button type="button" @click="toggleExpandedAll()" class="btn btn-link btn-no-underline"
+                aria-expanded="false" aria-controls=""><i
+                  :class="['bi bi-caret-right', isExpandedAll() ? ['icon-expanded'] : ['icon-collapsed']]"></i></button>
+
+            </span>
+
             <span v-else>
               {{ header.title }}
             </span>
@@ -215,7 +223,7 @@ interface AssocArrayString {
 const checkedItems = reactive(<AssocArrayBoolean>{});
 const expandedItems = ref(<AssocArrayBoolean>{});
 let expandedItemFields: AssocArrayString = {};
-
+let expandedAll: Boolean = false;
 
 
 defineExpose({
@@ -270,7 +278,7 @@ const callRender = (header: GTableHeader, item: any) => {
 };
 
 
-const isAllChecked = (header: GTableHeader) => {
+const isCheckedAll = (header: GTableHeader) => {
   const items = getItems();
   if (items.length == 0) {
     return false;
@@ -281,8 +289,33 @@ const isAllChecked = (header: GTableHeader) => {
       isChecked = false;
     }
   });
-  //console.log("in isAllChecked mit result ", isChecked);
+
   return isChecked;
+};
+
+
+const isExpandedAll = () => {
+  const items = getItems();
+  if (items.length == 0) {
+    return false;
+  }
+  let isExpanded = true;
+  for (const [index, item] of items.entries()) {
+    const itemsIndex = getItemsIndex(index);
+    if (expandedItems.value[itemsIndex] !== true) {
+      isExpanded = false;
+    }
+  };
+
+  return isExpanded;
+};
+
+const checkSetExpandedAll = () => {
+  if (isExpandedAll() === true) {
+    expandedAll = true;
+  } else {
+    expandedAll = false;
+  }
 };
 
 const isEmptyDisabled = computed(() => {
@@ -335,9 +368,17 @@ function toggleExpanded(index: number, field: string) {
       item: props.items[index]
     });
   }
-
+  checkSetExpandedAll();
 }
 
+function toggleExpandedAll() {
+  checkSetExpandedAll();
+  if (expandedAll == false) {
+    expandAll();
+  } else {
+    collapseAll();
+  }
+}
 
 function tableIdentifier(prefix: string): string {
 
@@ -361,12 +402,10 @@ function collapseAll() {
     }
 
   });
+  expandedAll = false;
 }
 
 function expandAll() {
-  //console.log("in GTable expandAll");
-  //console.log(expandedItems.value);
-  //console.log(expandedItemFields);
 
   const items = getItems();
 
@@ -379,41 +418,37 @@ function expandAll() {
       break;
     }
   }
-  //console.log("found expandable header", expandableHeader);
+  // found expandable header
   if (expandableHeader !== null) {
 
     for (const [index, item] of items.entries()) {
       const key = item[props.keyField];
-      //console.log("aktueller index", index);
-      //console.log("get items index of index:", getItemsIndex(index));
-      const itemsIndex = getItemsIndex(index);
-      //console.log("keyField aus Props:", key);
 
-      //console.log("column content", item);
+      const itemsIndex = getItemsIndex(index);
 
       // taken from toggleExpand, but without toggling
       let expanded = false;
-      expandedItemFields[index] = expandableHeader.field;
+      expandedItemFields[itemsIndex] = expandableHeader.field;
       if (expandedItems.value.hasOwnProperty(itemsIndex)) {
         expanded = expandedItems.value[itemsIndex];
       } // else expanded is false from preset
-      // todo optimize here, expand only if currently isn't expanded
-       
-      expandedItems.value[itemsIndex] = true;
-      //console.log("expanded is? ", expanded, expandedItems.value[index]);
-      if (props.expandEvent) { // emit event if prop is defined
-        //console.log("emit expandEvent mit index ", index);
-        emits(props.expandEvent, { // send row index and expanded status
-          index: itemsIndex,
-          expanded: expandedItems.value[itemsIndex],
-          item: props.items[itemsIndex]
-        });
+      // expand only if currently isn't expanded
+      if (expanded === false) {
+        expandedItems.value[itemsIndex] = true;
+        //console.log("expanded is? ", expanded, expandedItems.value[index]);
+        if (props.expandEvent) { // emit event if prop is defined
+          //console.log("emit expandEvent mit index ", index);
+          emits(props.expandEvent, { // send row index and expanded status
+            index: itemsIndex,
+            expanded: expandedItems.value[itemsIndex],
+            item: props.items[itemsIndex]
+          });
+        }
       }
     }
+    expandedAll = true;
 
   }
-
-
 }
 
 /*function getCollapseTargetId(index: number): string {
