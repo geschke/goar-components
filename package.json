@@ -3,7 +3,7 @@
   "author": "Ralf Geschke <ralf@kuerbis.org>",
   "description": "A Vue.js component library that offers the enhanced UI elements tables, select boxes, and toasts, fully integrated with Bootstrap",
   "license": "MIT",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "type": "module",
   "repository": {
     "type": "git",
@@ -26,18 +26,18 @@
     "bootstrap-icons": "^1.11.3"
   },
   "dependencies": {
-    "pinia": "^2.1.7",
-    "uuidv4": "^6.2.13",
-    "vue": "^3.4.31"
+    "pinia": "^3.0.2",
+    "uuid": "^11.1.0",
+    "vue": "^3.5.15"
   },
   "devDependencies": {
     "@types/bootstrap": "^5.2.10",
-    "@types/node": "^22.1.0",
-    "@vitejs/plugin-vue": "^5.0.5",
-    "typescript": "^5.2.2",
-    "vite": "^6.2.1",
-    "vite-plugin-css-injected-by-js": "^3.5.1",
-    "vue-tsc": "^2.0.24"
+    "@types/node": "^22.15.23",
+    "@vitejs/plugin-vue": "^5.2.4",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
+    "vite-plugin-css-injected-by-js": "^3.5.2",
+    "vue-tsc": "^2.2.10"
   },
   "files": [
     "dist"
