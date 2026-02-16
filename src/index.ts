@@ -1,10 +1,10 @@
 // /src/index.ts 
 import { GSelect } from './components/GSelect';
-import type { GTableHeader } from './types/GTableHeader.ts';
+import type { GTableHeader } from './types/GTableHeader';
 import GTable from './components/GTable.vue';
 
 import GToast from './components/GToast.vue';
-import type { GToastContent } from './types/GToastTypes.ts';
+import type { GToastContent } from './types/GToastTypes';
 
 import { GToastSuccess, GToastDanger, GToastInfo, GToastWarning } from './types/GToastTypes';
 

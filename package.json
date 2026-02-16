@@ -3,8 +3,17 @@
   "author": "Ralf Geschke <ralf@kuerbis.org>",
   "description": "A Vue.js component library that offers the enhanced UI elements tables, select boxes, and toasts, fully integrated with Bootstrap",
   "license": "MIT",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/geschke/goar-components.git"
@@ -23,41 +32,46 @@
   "peerDependencies": {
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.3",
-    "bootstrap-icons": "^1.11.3"
+    "bootstrap-icons": "^1.11.3",
+    "vue": "^3.5.0",
+    "pinia": "^3.0.0"
   },
   "dependencies": {
-    "pinia": "^3.0.2",
-    "uuid": "^11.1.0",
-    "vue": "^3.5.15"
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@types/bootstrap": "^5.2.10",
-    "@types/node": "^22.15.23",
-    "@vitejs/plugin-vue": "^5.2.4",
-    "typescript": "^5.8.3",
-    "vite": "^6.3.5",
+    "@types/node": "^25.2.3",
+    "@vitejs/plugin-vue": "^6.0.4",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1",
     "vite-plugin-css-injected-by-js": "^3.5.2",
-    "vue-tsc": "^2.2.10"
+    "vue-tsc": "^3.2.4",
+    "vue": "^3.5.28",
+    "pinia": "^3.0.4"
+  },
+  "main": "./dist/goar-components.cjs",
+  "module": "./dist/goar-components.es.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/goar-components.es.js",
+      "require": "./dist/goar-components.cjs"
+    },
+    "./package.json": "./package.json"
   },
   "files": [
     "dist"
   ],
-  "main": "./dist/goar-components.umd.js",
-  "module": "./dist/goar-components.es.js",
-  "exports": {
-    ".": {
-      "import": "./dist/goar-components.es.js",
-      "require": "./dist/goar-components.umd.js"
-    }
-  },
-  "types": "./dist/types/index.d.ts",
   "scripts": {
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
+    "build": "npm run clean && vite build && vue-tsc -p tsconfig.build.json",
+    "typecheck": "vue-tsc -p tsconfig.build.json --noEmit",
     "dev": "vite",
-    "build": "vite build && vue-tsc --emitDeclarationOnly && mv dist/src dist/types",
+    "preview": "vite preview",
     "preserve": "vite build",
     "serve": "vite preview --port 5050",
-    "typecheck": "vue-tsc --noEmit",
-    "preview": "vite preview",
     "test": "exit 0"
   }
 }

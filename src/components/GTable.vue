@@ -505,17 +505,17 @@ function handleHeaderCheckEvent(event: Event, header: GTableHeader) {
   const items = getItems();
 
   items.forEach(function (item) {
-    //console.log(item[header.field]);
-    if (checkedItems.hasOwnProperty(item[header.field])) { // previous value is available
-      if (checkedItems[item[header.field]] != isChecked) {
-        // only set and trigger event if current value differs from target value
-        //console.log("field ", item[header.field], " set to: ", isChecked);
-        checkedItems[item[header.field]] = isChecked;
-        handleCheckEvent(header, item);
-      }
-
-    } else {
-      checkedItems[item[header.field]] = isChecked;
+    const key = item[header.field];
+    const currentStatus = checkedItems.hasOwnProperty(key) ? checkedItems[key] : false;
+    // Treat missing row state as unchecked so first header-click emits row events.
+    if (currentStatus !== isChecked) {
+      checkedItems[key] = isChecked;
+      handleCheckEvent(header, item);
+      return;
+    }
+    // Keep local state initialized even when no change event is needed.
+    if (!checkedItems.hasOwnProperty(key)) {
+      checkedItems[key] = isChecked;
     }
   });
 
