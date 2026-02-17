@@ -14,9 +14,13 @@ export default defineConfig({
       fileName: (format) => (format === "cjs" ? "goar-components.cjs" : "goar-components.es.js"),
     },
     rollupOptions: {
-      external: ["vue", "pinia"],
+      external: ["vue", "pinia", "bootstrap", "@popperjs/core"],
       output: {
-        globals: { vue: "Vue", pinia: "Pinia" }
+        globals: {
+          vue: "Vue",
+          pinia: "Pinia"
+
+        }
       }
     }
   }
