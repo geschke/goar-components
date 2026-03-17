@@ -19,3 +19,7 @@ Feel free to explore the components and use them if they fit your needs. Feedbac
 ## Documentation
 
 For installation and usage please have a look at the documentation pages: https://geschke.github.io/goar-components-docs/
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for a full list of changes per version.

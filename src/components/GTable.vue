@@ -139,7 +139,6 @@ import type { GTableHeader } from "../types/GTableHeader.ts";
 import type { GTableItem } from "../types/GTableItem.ts";
 
 import { v4 as uuidv4 } from 'uuid';
-import { start } from 'repl';
 
 
 const slots = useSlots();
@@ -154,8 +153,9 @@ interface Props {
   items: Array<GTableItem>,
   keyField?: string,
   checkEvent?: string, // name of event to be triggered when checkbox is clicked (changed)
-
   expandEvent?: string, // name of event to be triggered when expand button is clicked
+
+  count?: number, // total number of items for server-side pagination; if set (> 0), server-side mode is active
   showLoading?: boolean, // default false, show loading status according to "loading" prop
   loading?: boolean, // default false; if true and the items array is empty, a loading animation will be shown
   showEmpty?: boolean, // default true; show message if items array is empty
@@ -183,6 +183,7 @@ const props = withDefaults(defineProps<Props>(), {
   keyField: '',
   checkEvent: '',
   expandEvent: '',
+  count: 0,
   showEmpty: true,
   showLoading: false,
   loading: false,
@@ -246,11 +247,16 @@ onMounted(() => {
 });
 */
 
+const isServerSide = computed(() => (props.count ?? 0) > 0);
+
 const numberOfItems = computed(() => {
   return props.items.length;
 });
 
 const numberOfPages = computed(() => {
+  if (isServerSide.value) {
+    return Math.ceil((props.count ?? 0) / itemsPerPage.value);
+  }
   return Math.ceil(numberOfItems.value / itemsPerPage.value);
 });
 
@@ -540,8 +546,14 @@ function getPageClasses(page: number) {
 }
 
 function gotoPage(page: number) {
-  //console.log("Go to page: ", page);
   currentPage.value = page;
+  if (isServerSide.value) {
+    emits('pageChange', {
+      page,
+      offset: (page - 1) * itemsPerPage.value,
+      limit: itemsPerPage.value,
+    });
+  }
 }
 
 /*function getFirstPage() {
@@ -565,8 +577,11 @@ function getNextPage(current: number) {
 
 function getItems() {
   if (props.pagination) {
+    if (isServerSide.value) {
+      return props.items;
+    }
     let startRange = (currentPage.value - 1) * itemsPerPage.value;
-    offsetIndex.value = startRange; // yeah, ugly side effect... 
+    offsetIndex.value = startRange; // yeah, ugly side effect...
 
     return props.items.slice(startRange, startRange + itemsPerPage.value);
   }
