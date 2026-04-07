@@ -4,7 +4,9 @@
     <table :class="tableClasses">
       <thead :class="tableHeadClasses">
         <tr>
-          <th v-for="header in headers" :key="header.field" scope="col">
+          <th v-for="header in headers" :key="header.field" scope="col"
+            :aria-sort="isSortable(header) ? (sortField === header.field && sortDirection !== 'none' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none') : undefined"
+          >
             <span v-if="header.type && header.type == 'checkbox' && header.checkboxHeader == false">&nbsp;</span>
             <span v-else-if="header.type && header.type == 'checkbox'" :class="checkboxStyle(header)">
               <input class="form-check-input" type="checkbox" v-bind:disabled="isEmptyDisabled"
@@ -18,6 +20,20 @@
                 aria-expanded="false" aria-controls=""><i
                   :class="['bi bi-caret-right', isExpandedAll() ? ['icon-expanded'] : ['icon-collapsed']]"></i></button>
 
+            </span>
+
+            <span v-else-if="isSortable(header)"
+              class="gtable-sortable-header"
+              @click="handleSortClick(header)"
+              role="button"
+              tabindex="0"
+              @keydown.enter="handleSortClick(header)"
+              @keydown.space.prevent="handleSortClick(header)"
+            >
+              <i v-if="sortField === header.field && sortDirection === 'asc'" class="bi bi-caret-up-fill"></i>
+              <i v-else-if="sortField === header.field && sortDirection === 'desc'" class="bi bi-caret-down-fill"></i>
+              <i v-else class="bi bi-chevron-expand"></i>
+              {{ header.title }}
             </span>
 
             <span v-else>
@@ -135,6 +151,8 @@
 
 <script setup lang="ts">
 import { computed, onMounted, useSlots, ref, reactive } from 'vue';
+
+type SortDirection = 'none' | 'asc' | 'desc';
 import type { GTableHeader } from "../types/GTableHeader.ts";
 import type { GTableItem } from "../types/GTableItem.ts";
 
@@ -221,6 +239,9 @@ interface AssocArrayString {
 }
 
 
+const sortField = ref<string>('');
+const sortDirection = ref<SortDirection>('none');
+
 const checkedItems = reactive(<AssocArrayBoolean>{});
 const expandedItems = ref(<AssocArrayBoolean>{});
 let expandedItemFields: AssocArrayString = {};
@@ -233,8 +254,11 @@ defineExpose({
   },
   expandAll() {
     expandAll();
-  }
-
+  },
+  resetSort() {
+    sortField.value = '';
+    sortDirection.value = 'none';
+  },
 });
 
 onMounted(() => {
@@ -529,6 +553,35 @@ function handleHeaderCheckEvent(event: Event, header: GTableHeader) {
 
 }
 
+function isSortable(header: GTableHeader): boolean {
+  return (
+    header.sortable === true &&
+    !!header.field &&
+    header.type !== 'checkbox' &&
+    header.type !== 'expandable'
+  );
+}
+
+function handleSortClick(header: GTableHeader) {
+  if (!isSortable(header)) return;
+
+  if (sortField.value !== header.field) {
+    sortField.value = header.field;
+    sortDirection.value = 'asc';
+  } else {
+    if (sortDirection.value === 'none') sortDirection.value = 'asc';
+    else if (sortDirection.value === 'asc') sortDirection.value = 'desc';
+    else sortDirection.value = 'none';
+  }
+
+  // Reset to first page on sort change
+  currentPage.value = 1;
+
+  if (isServerSide.value) {
+    emits('sortChange', { field: sortField.value, direction: sortDirection.value });
+  }
+}
+
 function getPaginationClasses() {
   let classes = 'pagination';
   classes += ((props.paginationAlignment != '') ? ' ' + props.paginationAlignment : '');
@@ -575,17 +628,39 @@ function getNextPage(current: number) {
   return current + 1;
 }
 
+const sortedItems = computed<Array<GTableItem>>(() => {
+  if (isServerSide.value || sortDirection.value === 'none' || !sortField.value) {
+    return props.items;
+  }
+  const field = sortField.value;
+  const dir = sortDirection.value;
+  return [...props.items].sort((a, b) => {
+    const va = a[field];
+    const vb = b[field];
+    if (va == null && vb == null) return 0;
+    if (va == null) return dir === 'asc' ? -1 : 1;
+    if (vb == null) return dir === 'asc' ? 1 : -1;
+    let result: number;
+    if (typeof va === 'number' && typeof vb === 'number') {
+      result = va - vb;
+    } else {
+      result = String(va).localeCompare(String(vb));
+    }
+    return dir === 'asc' ? result : -result;
+  });
+});
+
 function getItems() {
+  const sorted = sortedItems.value;
   if (props.pagination) {
     if (isServerSide.value) {
-      return props.items;
+      return sorted;
     }
     let startRange = (currentPage.value - 1) * itemsPerPage.value;
     offsetIndex.value = startRange; // yeah, ugly side effect...
-
-    return props.items.slice(startRange, startRange + itemsPerPage.value);
+    return sorted.slice(startRange, startRange + itemsPerPage.value);
   }
-  return props.items;
+  return sorted;
 }
 
 function getItemsIndex(slicedIndex: number) {
@@ -652,6 +727,17 @@ function paginationRange() {
 .btn-no-underline {
   text-decoration: none;
 }
+
+.gtable-sortable-header {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.gtable-sortable-header:hover {
+  opacity: 0.75;
+}
+
 
 .icon-expanded {
   display: flex;

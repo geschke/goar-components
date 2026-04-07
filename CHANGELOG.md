@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.6] - 2026-04-07
+
+### Added
+- GTable: column sorting — set `sortable: true` on any header with a `field` to make it clickable; sort cycles through **none → asc → desc → none**; only one column can be active at a time
+- GTable: client-side sorting sorts all items before pagination; items are compared numerically for numbers and case-insensitively for strings; `null`/`undefined` values sort to the start (asc) or end (desc)
+- GTable: `sortChange` event emitted on every sort state change (both client-side and server-side mode); payload contains `{ field: string, direction: 'asc' | 'desc' | 'none' }`; in server-side mode the parent must handle this event to fetch the sorted page from the server
+- GTable: sort change resets the active page to 1 automatically
+- GTable: `sortable` is silently ignored for columns of `type: 'checkbox'` or `type: 'expandable'` and for render-only columns without a `field`
+- GTableHeader: new optional `sortable` property (`boolean`, default `false`)
+- GTable: `resetSort()` method exposed via `defineExpose` to programmatically reset sort state from the parent component
+- GTable: `aria-sort` attribute added to sortable `<th>` elements (`none` / `ascending` / `descending`) for screen reader accessibility
+
 ## [0.3.5] - 2026-03-17
 
 ### Added
