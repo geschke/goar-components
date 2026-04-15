@@ -5,7 +5,7 @@
       <thead :class="tableHeadClasses">
         <tr>
           <th v-for="header in headers" :key="header.field" scope="col"
-            :aria-sort="isSortable(header) ? (sortField === header.field && sortDirection !== 'none' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none') : undefined"
+            :aria-sort="isSortable(header) ? (activeSortField === header.field && activeSortDirection !== 'none' ? (activeSortDirection === 'asc' ? 'ascending' : 'descending') : 'none') : undefined"
           >
             <span v-if="header.type && header.type == 'checkbox' && header.checkboxHeader == false">&nbsp;</span>
             <span v-else-if="header.type && header.type == 'checkbox'" :class="checkboxStyle(header)">
@@ -30,8 +30,8 @@
               @keydown.enter="handleSortClick(header)"
               @keydown.space.prevent="handleSortClick(header)"
             >
-              <i v-if="sortField === header.field && sortDirection === 'asc'" class="bi bi-caret-up-fill"></i>
-              <i v-else-if="sortField === header.field && sortDirection === 'desc'" class="bi bi-caret-down-fill"></i>
+              <i v-if="activeSortField === header.field && activeSortDirection === 'asc'" class="bi bi-caret-up-fill"></i>
+              <i v-else-if="activeSortField === header.field && activeSortDirection === 'desc'" class="bi bi-caret-down-fill"></i>
               <i v-else class="bi bi-chevron-expand"></i>
               {{ header.title }}
             </span>
@@ -189,6 +189,8 @@ interface Props {
   pageStringNext?: string, // default "Next"
   paginationAlignment?: string, // default "justify-content-end", all CSS classes possible
   paginationSize?: string, // default use Bootstraps defaults, possible values: pagination-lg (large), pagination-sm (small)
+  sortField?: string, // optional controlled sort field. If set with sortDirection, the parent owns the visible sort state
+  sortDirection?: SortDirection, // optional controlled sort direction. Use with sortField for server-side or persisted sorting
 
 }
 
@@ -239,8 +241,21 @@ interface AssocArrayString {
 }
 
 
-const sortField = ref<string>('');
-const sortDirection = ref<SortDirection>('none');
+const internalSortField = ref<string>('');
+const internalSortDirection = ref<SortDirection>('none');
+
+const isSortControlled = computed(() => (
+  props.sortField !== undefined ||
+  props.sortDirection !== undefined
+));
+
+const activeSortField = computed(() => (
+  isSortControlled.value ? (props.sortField ?? '') : internalSortField.value
+));
+
+const activeSortDirection = computed<SortDirection>(() => (
+  isSortControlled.value ? normalizeSortDirection(props.sortDirection) : internalSortDirection.value
+));
 
 const checkedItems = reactive(<AssocArrayBoolean>{});
 const expandedItems = ref(<AssocArrayBoolean>{});
@@ -256,8 +271,8 @@ defineExpose({
     expandAll();
   },
   resetSort() {
-    sortField.value = '';
-    sortDirection.value = 'none';
+    internalSortField.value = '';
+    internalSortDirection.value = 'none';
   },
 });
 
@@ -565,21 +580,36 @@ function isSortable(header: GTableHeader): boolean {
 function handleSortClick(header: GTableHeader) {
   if (!isSortable(header)) return;
 
-  if (sortField.value !== header.field) {
-    sortField.value = header.field;
-    sortDirection.value = 'asc';
-  } else {
-    if (sortDirection.value === 'none') sortDirection.value = 'asc';
-    else if (sortDirection.value === 'asc') sortDirection.value = 'desc';
-    else sortDirection.value = 'none';
+  const nextSort = nextSortState(header.field);
+
+  if (!isSortControlled.value) {
+    internalSortField.value = nextSort.field;
+    internalSortDirection.value = nextSort.direction;
   }
 
   // Reset to first page on sort change
   currentPage.value = 1;
 
-  if (isServerSide.value) {
-    emits('sortChange', { field: sortField.value, direction: sortDirection.value });
+  emits('sortChange', nextSort);
+}
+
+function nextSortState(field: string): { field: string; direction: SortDirection } {
+  if (activeSortField.value !== field) {
+    return { field, direction: 'asc' };
   }
+  if (activeSortDirection.value === 'none') {
+    return { field, direction: 'asc' };
+  }
+  if (activeSortDirection.value === 'asc') {
+    return { field, direction: 'desc' };
+  }
+  return { field, direction: 'none' };
+}
+
+function normalizeSortDirection(direction: SortDirection | undefined): SortDirection {
+  return direction === 'asc' || direction === 'desc' || direction === 'none'
+    ? direction
+    : 'none';
 }
 
 function getPaginationClasses() {
@@ -629,11 +659,11 @@ function getNextPage(current: number) {
 }
 
 const sortedItems = computed<Array<GTableItem>>(() => {
-  if (isServerSide.value || sortDirection.value === 'none' || !sortField.value) {
+  if (isServerSide.value || activeSortDirection.value === 'none' || !activeSortField.value) {
     return props.items;
   }
-  const field = sortField.value;
-  const dir = sortDirection.value;
+  const field = activeSortField.value;
+  const dir = activeSortDirection.value;
   return [...props.items].sort((a, b) => {
     const va = a[field];
     const vb = b[field];

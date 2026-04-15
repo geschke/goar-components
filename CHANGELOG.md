@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.7] - 2026-04-15
+
+### Added
+- GTable: added optional `sortField` and `sortDirection` props to allow externally controlled sort state
+
+### Fixed
+- GTable: sortable header icons and `aria-sort` can now reflect a preselected server-side sort state
+- GTable: `sortChange` is now emitted consistently in both client-side and server-side mode
+
 ## [0.3.6] - 2026-04-07
 
 ### Added
