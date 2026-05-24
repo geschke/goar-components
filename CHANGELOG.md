@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.8] - 2026-05-24
+
+### Added
+- GTable: new optional `pagination-before` and `pagination-after` slots — render custom content (e.g. a rows-per-page selector) to the left or right of the pagination controls in a shared flex row; both slots are independent of the `pagination` prop and remain visible even when pagination is disabled; the `paginationAlignment` prop now applies to the flex wrapper that contains both slots and the pagination nav
+
 ## [0.3.7] - 2026-04-15
 
 ### Added

@@ -120,32 +120,34 @@
 
 
 
-    <nav v-if="pagination" aria-label="Table navigation">
-      <ul :class="getPaginationClasses()">
+    <div v-if="pagination || !!slots['pagination-before'] || !!slots['pagination-after']" class="d-flex align-items-start gap-2" :class="props.paginationAlignment">
+      <slot name="pagination-before" />
+      <nav v-if="pagination" aria-label="Table navigation">
+        <ul :class="getPaginationClasses()">
 
-        <li v-if="props.showPageFirstLast" class="page-item"><button class="page-link" href="#" @click="gotoPage(1)"><i
-              v-if="showPageIcons" class="bi-chevron-double-left"></i><span v-else>{{ props.pageStringFirst
-              }}</span></button></li>
+          <li v-if="props.showPageFirstLast" class="page-item"><button class="page-link" href="#" @click="gotoPage(1)"><i
+                v-if="showPageIcons" class="bi-chevron-double-left"></i><span v-else>{{ props.pageStringFirst
+                }}</span></button></li>
 
-        <li class="page-item"><button class="page-link" href="#" @click="gotoPage(getPrevPage(currentPage))"><i
-              v-if="showPageIcons" class="bi-chevron-left"></i><span v-else>{{ props.pageStringPrev }}</span></button>
-        </li>
+          <li class="page-item"><button class="page-link" href="#" @click="gotoPage(getPrevPage(currentPage))"><i
+                v-if="showPageIcons" class="bi-chevron-left"></i><span v-else>{{ props.pageStringPrev }}</span></button>
+          </li>
 
-        <li v-for="(n) in paginationRange()" :class="getPageClasses(n)"><button class="page-link"
-            @click="gotoPage(n)">{{ n
-            }}</button></li>
-        <li class="page-item"><button class="page-link" href="#" @click="gotoPage(getNextPage(currentPage))"><i
-              v-if="showPageIcons" class="bi-chevron-right"></i><span v-else>{{ props.pageStringNext }}</span></button>
-        </li>
-        <li v-if="props.showPageFirstLast" class="page-item"><button class="page-link" href="#"
-            @click="gotoPage(numberOfPages)"><i v-if="showPageIcons" class="bi-chevron-double-right"></i><span v-else>{{
-              props.pageStringLast }}</span></button></li>
-
-
-      </ul>
+          <li v-for="(n) in paginationRange()" :class="getPageClasses(n)"><button class="page-link"
+              @click="gotoPage(n)">{{ n
+              }}</button></li>
+          <li class="page-item"><button class="page-link" href="#" @click="gotoPage(getNextPage(currentPage))"><i
+                v-if="showPageIcons" class="bi-chevron-right"></i><span v-else>{{ props.pageStringNext }}</span></button>
+          </li>
+          <li v-if="props.showPageFirstLast" class="page-item"><button class="page-link" href="#"
+              @click="gotoPage(numberOfPages)"><i v-if="showPageIcons" class="bi-chevron-double-right"></i><span v-else>{{
+                props.pageStringLast }}</span></button></li>
 
 
-    </nav>
+        </ul>
+      </nav>
+      <slot name="pagination-after" />
+    </div>
   </div>
 </template>
 
@@ -613,8 +615,7 @@ function normalizeSortDirection(direction: SortDirection | undefined): SortDirec
 }
 
 function getPaginationClasses() {
-  let classes = 'pagination';
-  classes += ((props.paginationAlignment != '') ? ' ' + props.paginationAlignment : '');
+  let classes = 'pagination mb-0';
   classes += ((props.paginationSize != '') ? ' ' + props.paginationSize : '');
   return classes;
 }
